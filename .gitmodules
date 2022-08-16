@@ -1,0 +1,3 @@
+[submodule "MultiplayerDemo/Assets/UnityCore"]
+	path = MultiplayerDemo/Assets/UnityCore
+	url = git@github.com:coderDarren/UnityCore.git
