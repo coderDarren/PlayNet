@@ -29,7 +29,7 @@ namespace PlayNet.Models {
             }
         }
 
-        public void HandleEvt(SocketIOEvent _evt) {
+        public void Broadcast(SocketIOEvent _evt) {
             if (m_Invalid) return;
 
             string _msg = Regex.Unescape((string)_evt.data.ToDictionary()["message"]);

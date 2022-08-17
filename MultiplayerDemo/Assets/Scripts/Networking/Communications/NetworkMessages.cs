@@ -12,5 +12,7 @@ namespace PlayNet.Communications {
         public static readonly string PLAYER_LEFT = "PLAYER_LEFT";
         public static readonly string PLAYER_JOINED = "PLAYER_JOINED";
         public static readonly string PLAYER_TRANSFORM_CHANGE = "PLAYER_TRANSFORM_CHANGE";
+        public static readonly string NPC_SPAWN = "NPC_SPAWN";
+        public static readonly string NPC_EXIT = "NPC_EXIT";
     }
 }

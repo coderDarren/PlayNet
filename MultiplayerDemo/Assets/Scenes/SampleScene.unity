@@ -267,6 +267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   test: 1
+  testPlayer: {fileID: 1941412218}
 --- !u!114 &909546264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,7 +667,7 @@ MonoBehaviour:
         timestamp: 
         x: 0
         y: 1.1
-        z: 0
+        z: 50
       rot:
         timestamp: 
         x: 0

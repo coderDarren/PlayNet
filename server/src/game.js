@@ -21,8 +21,8 @@ class Game {
 
         // use a variable to store all players connected to the game
         // Here we initialize the scene that should be loaded for this game server
-        // The scene object loads in mobs, waypoint graphs, and shop terminals
-        this._scene = new TestScene(this);
+        // The scene object loads in npcs, waypoint graphs, and shop terminals
+        this._scene = TestScene(this);
         this._players = [];
         this._npcs = this._scene.npcs;
 
@@ -71,7 +71,44 @@ class Game {
     }
 
     /*
-     * Emits a specific instance of nearby players and nearby mobs for each player..
+     * NPCs will constantly scan for nearby players
+     * Also used to determine the range where players can see other players
+     */
+    scanNearbyPlayers(_pos, _radius) {
+        return filter(this.__obj_data_map__(this._players), _player => {
+            const _dist = new Vector3(_pos).distanceTo(new Vector3(_player.transform.pos));
+            return _dist < _radius;
+        });
+    }
+
+    /*
+     * Mobs will constantly scan for nearby players
+     * Also used to determine the range where players can see other players
+     */
+    scanNearbyPlayerSockets(_pos, _radius) {
+        const _nearbyPlayers = filter(this._players, _player => {
+            const _dist = new Vector3(_pos).distanceTo(new Vector3(_player.transform.pos));
+            return _dist < _radius;
+        });
+        return map(_nearbyPlayers, _player => {
+            return _player.socket
+        });
+    }
+
+    getPlayer(_name) {
+        return find(this.__obj_data_map__(this._players), _player => {
+            return _player.name == _name;
+        });
+    }
+
+    getPlayerRaw(_name) {
+        return find(this._players, _player => {
+            return _player.data.name == _name;
+        });
+    }
+
+    /*
+     * Emits a specific instance of nearby players and nearby npcs for each player..
      * ..based on distance
      */
     __emit_tailored_instance__() {

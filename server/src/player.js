@@ -5,10 +5,12 @@ const {accumulate} = require('./util/util.js');
 
 const NETMSG_CHAT = "CHAT";
 const NETMSG_PLAYER_TRANSFORM_CHANGE = "PLAYER_TRANSFORM_CHANGE";
-const NETMSG_NPC_SPAWN = "MOB_SPAWN";
-const NETMSG_NPC_EXIT = "MOB_EXIT";
+const NETMSG_NPC_SPAWN = "NPC_SPAWN";
+const NETMSG_NPC_EXIT = "NPC_EXIT";
 const NETMSG_PLAYER_SPAWN = "PLAYER_SPAWN";
 const NETMSG_PLAYER_EXIT = "PLAYER_EXIT";
+const NETMSG_NPC_HIT_PLAYER = "NPC_HIT_PLAYER";
+const NETMSG_PLAYER_HEALTH_CHANGE = "PLAYER_HEALTH_CHANGE";
 
 class Player {
     constructor(_game, _socket, _data=null) {
@@ -42,6 +44,7 @@ class Player {
         this.__on_npc_exit__ = this.__on_npc_exit__.bind(this);
         this.__on_player_spawn__ = this.__on_player_spawn__.bind(this);
         this.__on_player_exit__ = this.__on_player_exit__.bind(this);
+        this.__send_message_to_nearby_players__ = this.__send_message_to_nearby_players__.bind(this);
 
         // updaters
         this.__handle_nearby_objects__ = this.__handle_nearby_objects__.bind(this);
@@ -54,8 +57,29 @@ class Player {
 
     update() {
         this.__detect_stationary__();
-        this._nearbyNPCs = this.__handle_nearby_objects__(this._nearbyNPCs, this._nearbyNPCsState, this._game.mobs, 'id', 50, this.__on_mob_spawn__, this.__on_mob_exit__);
+        this._nearbyNPCs = this.__handle_nearby_objects__(this._nearbyNPCs, this._nearbyNPCsState, this._game.npcs, 'id', 50, this.__on_npc_spawn__, this.__on_npc_exit__);
         this._nearbyPlayers = this.__handle_nearby_objects__(this._nearbyPlayers, this._nearbyPlayersState, this._game.players, 'name', 50, this.__on_player_spawn__, this.__on_player_exit__);
+    }
+
+    /*
+     * Called by npc when player gets hit
+     */
+    takeHit(_hitInfo) {
+        return;
+        this._data.health.health -= _hitInfo.dmg;
+        if (this._data.health.health < 0) {
+            this._data.health.health = 0;
+        }
+
+        _hitInfo.health = this._data.health.health;
+
+        this._socket.emit(NETMSG_NPC_HIT_PLAYER, {message:JSON.stringify(_hitInfo)});
+        
+        this.__send_message_to_nearby_players__(NETMSG_PLAYER_HEALTH_CHANGE, {
+            id: this._data.name,
+            health: this._data.health.health,
+            maxHealth: this._data.health.maxHealth
+        });
     }
 
     __detect_stationary__() {
@@ -110,11 +134,11 @@ class Player {
                     return false;
                 }
 
-                // include this object in the nearbyMobs array for this frame
+                // include this object in the nearbyNpcs array for this frame
                 return true;
             }
 
-            // exclude this object from the nearbyMobs array for this frame
+            // exclude this object from the nearbyNpcs array for this frame
             return false;
 
         }.bind(this));
@@ -133,12 +157,12 @@ class Player {
         return _output;
     }
 
-    __on_npc_spawn__(_mob) {
-        this._socket.emit(NETMSG_NPC_SPAWN, {message:JSON.stringify(_mob.spawnData)});
+    __on_npc_spawn__(_npc) {
+        this._socket.emit(NETMSG_NPC_SPAWN, {message:JSON.stringify(_npc.spawnData)});
     }
 
-    __on_npc_exit__(_mobId) {
-        this._socket.emit(NETMSG_NPC_EXIT, {message:_mobId});
+    __on_npc_exit__(_npcId) {
+        this._socket.emit(NETMSG_NPC_EXIT, {message:_npcId});
     }
 
     __on_player_spawn__(_player) {
@@ -152,6 +176,21 @@ class Player {
     __on_transform_updated__(_transform) {
         this._data.transform = _transform;
         this._game.updatePlayer(this);
+    }
+
+    __send_message_to_nearby_players__(_evt, _msg, _includeThisPlayer) {
+        const _nearbyPlayers = this._game.scanNearbyPlayerSockets(this._data.transform.pos, 50);
+        for (var i in _nearbyPlayers) {
+            const _socket = _nearbyPlayers[i];
+            _socket.emit(_evt, {
+                message: JSON.stringify(_msg)
+            });
+        }
+        if (_includeThisPlayer) {
+            this._socket.emit(_evt, {
+                message: JSON.stringify(_msg)
+            });
+        }
     }
 
     get data() { return this._data; }

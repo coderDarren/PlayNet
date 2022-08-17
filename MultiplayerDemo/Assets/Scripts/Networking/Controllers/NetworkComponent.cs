@@ -19,5 +19,10 @@ namespace PlayNet.Networking {
         // These functions to be called for Unity Event Functions 'OnEnable' and 'OnDisable' respectively
         public virtual void Enable() {}
         public virtual void Disable() {}
+
+        protected void Log(string _msg) {
+            if (!debug) return;
+            Debug.Log("["+this.GetType()+"]: "+_msg);
+        }
     }
 }

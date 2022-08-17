@@ -27,6 +27,10 @@ namespace PlayNet.Networking {
         public NetworkEvent<NetworkPlayerData> playerSpawnEvt {get; private set;}
         public NetworkEvent<NetworkTransform> playerTransformEvt {get; private set;}
     #endregion
+    #region NPCs
+        public NetworkEvent<NetworkNPCData> npcSpawnEvt {get;private set;}
+        public NetworkEvent<string> npcExitEvt {get;private set;}
+    #endregion
     // Add more events here!
 #endregion
 
@@ -55,23 +59,33 @@ namespace PlayNet.Networking {
             playerLeaveEvt = new NetworkEvent<NetworkPlayerData>("Player left.", debug);
             playerSpawnEvt = new NetworkEvent<NetworkPlayerData>("Player entered range.", debug);
             playerTransformEvt = new NetworkEvent<NetworkTransform>("Player transform changed.", debug);
+            // npc events
+            npcSpawnEvt = new NetworkEvent<NetworkNPCData>("NPC spawned", debug);
+            npcExitEvt = new NetworkEvent<string>("NPC exited range", debug);
         }
 
+        /*
+         * Subscribe to network events and broadcast to game managers
+         */
         private void Listen() {
             // server events
             m_Manager.Socket.On(NetworkMessages.CONNECT, OnNetworkConnected);
             m_Manager.Socket.On(NetworkMessages.DISCONNECT, OnNetworkDisconnected);
-            m_Manager.Socket.On(NetworkMessages.HANDSHAKE, handshakeEvt.HandleEvt);
+            m_Manager.Socket.On(NetworkMessages.HANDSHAKE, handshakeEvt.Broadcast);
         
-            m_Manager.Socket.On(NetworkMessages.INSTANCE, instanceDataEvt.HandleEvt);
-            m_Manager.Socket.On(NetworkMessages.CHAT, chatEvt.HandleEvt);
+            m_Manager.Socket.On(NetworkMessages.INSTANCE, instanceDataEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.CHAT, chatEvt.Broadcast);
 
             // player events
-            m_Manager.Socket.On(NetworkMessages.PLAYER_SPAWN, playerSpawnEvt.HandleEvt);
-            m_Manager.Socket.On(NetworkMessages.PLAYER_EXIT, playerExitEvt.HandleEvt);
-            m_Manager.Socket.On(NetworkMessages.PLAYER_JOINED, playerJoinEvt.HandleEvt);
-            m_Manager.Socket.On(NetworkMessages.PLAYER_LEFT, playerLeaveEvt.HandleEvt);
-            m_Manager.Socket.On(NetworkMessages.PLAYER_TRANSFORM_CHANGE, playerTransformEvt.HandleEvt);
+            m_Manager.Socket.On(NetworkMessages.PLAYER_SPAWN, playerSpawnEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.PLAYER_EXIT, playerExitEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.PLAYER_JOINED, playerJoinEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.PLAYER_LEFT, playerLeaveEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.PLAYER_TRANSFORM_CHANGE, playerTransformEvt.Broadcast);
+
+            // npc events
+            m_Manager.Socket.On(NetworkMessages.NPC_SPAWN, npcSpawnEvt.Broadcast);
+            m_Manager.Socket.On(NetworkMessages.NPC_EXIT, npcExitEvt.Broadcast);
         }
 
         private void OnNetworkConnected(SocketIOEvent _evt) {
