@@ -36,6 +36,14 @@ namespace PlayNet.Networking {
             Listen();
         }
 
+        public override void Enable() {
+
+        }
+
+        public override void Disable() {
+
+        }
+
         private void Build() {
             // server events
             chatEvt = new NetworkEvent<string>("Incoming chat", debug);
@@ -67,12 +75,12 @@ namespace PlayNet.Networking {
         }
 
         private void OnNetworkConnected(SocketIOEvent _evt) {
-            Debug.Log("Successfully connected to the server.");
+            // Debug.Log("Successfully connected to the server.");
             TryRunAction(OnConnect);
         }
 
         private void OnNetworkDisconnected(SocketIOEvent _evt) {
-            Debug.Log("Disconnected from the server.");
+            // Debug.Log("Disconnected from the server.");
             TryRunAction(OnDisconnect);
         }
 
@@ -82,17 +90,6 @@ namespace PlayNet.Networking {
             } catch (System.Exception _e) {
                 Debug.LogWarning(_e);
             }
-        }
-
-        private void SendString(string _id, string _data) {
-            Debug.Log("Sending {\"message\":\""+_data+"\"} to "+_id);
-            m_Manager.Socket.Emit(_id, new JSONObject("{\"message\":\""+_data+"\"}"));
-        }
-
-        private void SendNetworkData<T>(string _id, T _data) where T : NetworkModel {
-            _data.timestamp = NetworkTimestamp.NowMilliseconds().ToString();
-            string _json = _data.ToJsonString();
-            m_Manager.Socket.Emit(_id, new JSONObject(_json));
         }
     }
 }

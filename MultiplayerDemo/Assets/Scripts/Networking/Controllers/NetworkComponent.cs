@@ -15,5 +15,9 @@ namespace PlayNet.Networking {
             }
             m_Manager = _manager;
         }
+
+        // These functions to be called for Unity Event Functions 'OnEnable' and 'OnDisable' respectively
+        public virtual void Enable() {}
+        public virtual void Disable() {}
     }
 }

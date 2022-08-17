@@ -8,5 +8,13 @@ namespace PlayNet.Networking {
         public override void Initialize(NetworkManager _m) {
             base.Initialize(_m);
         }
+
+        public override void Enable() {
+
+        }
+
+        public override void Disable() {
+
+        }
     }
 }

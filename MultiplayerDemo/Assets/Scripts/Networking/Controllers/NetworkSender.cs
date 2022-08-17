@@ -11,6 +11,14 @@ namespace PlayNet.Networking {
             base.Initialize(_m);
         }
 
+        public override void Enable() {
+
+        }
+
+        public override void Disable() {
+
+        }
+
         private void SendString(string _id, string _data) {
             // Log("Sending {\"message\":\""+_data+"\"} to "+_id);
             m_Manager.Socket.Emit(_id, new JSONObject("{\"message\":\""+_data+"\"}"));
@@ -20,14 +28,6 @@ namespace PlayNet.Networking {
             _data.timestamp = NetworkTimestamp.NowMilliseconds().ToString();
             string _json = _data.ToJsonString();
             m_Manager.Socket.Emit(_id, new JSONObject(_json));
-        }
-
-        public void Connect() {
-            m_Manager.Socket.Connect();
-        }
-
-        public void Close() {
-            m_Manager.Socket.Close();
         }
 
         public void SendChat(string _chat) {

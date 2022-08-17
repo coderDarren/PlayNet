@@ -9,5 +9,13 @@ namespace PlayNet.Networking {
             base.Initialize(_m);
             
         }
+
+        public override void Enable() {
+
+        }
+
+        public override void Disable() {
+
+        }
     }
 }

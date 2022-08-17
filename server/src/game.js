@@ -1,6 +1,7 @@
 const {Vector3} = require('./util/vector');
 const {filter,findIndex, find, map} = require('lodash');
 const {TestScene} = require('./scenes');
+const Player = require('./player');
 
 const NETMSG_CONNECT = "connection";
 const NETMSG_DISCONNECT = "disconnect";
@@ -61,6 +62,15 @@ class Game {
     }
 
     /*
+     * Player will notify the game when they need to be updated
+     */
+    updatePlayer(_player) {
+        const _index = findIndex(this._players, _p => {return _p.data.name == _player.data.name});
+        if (_index == -1) return;
+        this._players[_index] = _player;
+    }
+
+    /*
      * Emits a specific instance of nearby players and nearby mobs for each player..
      * ..based on distance
      */
@@ -113,7 +123,7 @@ class Game {
 
     __hook_player__(_socket) {
         _socket.on(NETMSG_HANDSHAKE, function(_data) {
-            const _thisPlayer = new Player(this, _data, _socket);
+            const _thisPlayer = new Player(this, _socket, _data);
             this._players.push(_thisPlayer);
 
             // alert all players except this one that this player joined

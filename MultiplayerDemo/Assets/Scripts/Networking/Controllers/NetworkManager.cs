@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SocketIO;
 using PlayNet.Models;
+using PlayNet.Player;
 
 /*
     NetworkManager
@@ -22,7 +23,9 @@ namespace PlayNet.Networking {
     {
         public static NetworkManager instance;
 
+        [Header("Testing Spec")]
         public bool test;
+        public PlayNet.Player.NetworkPlayer testPlayer;
 
         public SocketIOComponent Socket {get;private set;}
         public NetworkConnector Connector {get;private set;}
@@ -47,30 +50,46 @@ namespace PlayNet.Networking {
 
             if (test) {
                 // auto connect with handshake
-
+                Connect();
             }
 
         }
 
         public override void DidEnable() {
             Listener.OnConnect += OnConnect;
+            Listener.OnDisconnect += OnDisconnect;
             Listener.handshakeEvt.OnEvt += OnHandshake;
         }
 
         public override void DidDisable() {
             Listener.OnConnect -= OnConnect;
+            Listener.OnDisconnect -= OnDisconnect;
             Listener.handshakeEvt.OnEvt -= OnHandshake;
         }
 
         private void OnConnect() {
+            Debug.Log("Connect!");
             if (test) {
-                // send handshake
-                
+                NetworkHandshake _handshake = new NetworkHandshake(testPlayer.testData, 0);
+                Sender.SendHandshake(_handshake);
             }
         }
 
-        private void OnHandshake(NetworkInstanceData _data) {
+        private void OnDisconnect() {
+            Debug.Log("Disconnect!");
+        }
 
+        private void OnHandshake(NetworkInstanceData _data) {
+            Debug.Log("Handshake!");
+
+        }
+
+        private void Connect() {
+            Socket.Connect();
+        }
+
+        private void Close() {
+            Socket.Close();
         }
 
     }

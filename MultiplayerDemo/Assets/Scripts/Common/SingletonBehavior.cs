@@ -7,24 +7,33 @@ namespace PlayNet {
     {
         public static SingletonBehavior instance;
 
+        private bool m_DidEnable;
+
         private void Awake() {
             if (!instance) {
                 instance = this;
                 DontDestroyOnLoad(this);
                 OnAwake();
+                Enable();
             } else {
                 Destroy(this);
             }
         }
 
         private void OnEnable() {
-            if (instance != this) return;
-            DidEnable();
+            Enable();
         }
 
         private void OnDisable() {
             if (instance != this) return;
             DidDisable();
+        }
+
+        private void Enable() {
+            if (instance != this) return;
+            if (m_DidEnable) return;
+            DidEnable();
+            m_DidEnable = true;
         }
 
         public virtual void OnAwake() {}
