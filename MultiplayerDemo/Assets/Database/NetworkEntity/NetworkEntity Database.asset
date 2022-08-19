@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72cad56b98779244b8110fdeab08054c, type: 3}
   m_Name: NetworkEntity Database
   m_EditorClassIdentifier: 
-  Prefabs: []
+  Prefabs:
+  - {fileID: 11400000, guid: 50c984e00c3a9f647b48fe166ba3f2ab, type: 2}

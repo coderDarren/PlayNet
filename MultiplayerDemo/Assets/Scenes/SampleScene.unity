@@ -280,7 +280,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3cdd35fd9690a549a28479cdf56548a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
+  debug: 1
+  entityDB: {fileID: 11400000, guid: fdde933911343b14ea9995074e167644, type: 2}
 --- !u!114 &909546265
 MonoBehaviour:
   m_ObjectHideFlags: 0

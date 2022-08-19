@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943c95f1d57563340bc972b58a81a346, type: 3}
   m_Name: Droid
   m_EditorClassIdentifier: 
-  nameQuery: 
-  Prefab: {fileID: 0}
+  nameQuery: Droid
+  Prefab: {fileID: 2214243159554248678, guid: b56c9829b9f83394a8b01bd30d5a3083, type: 3}
